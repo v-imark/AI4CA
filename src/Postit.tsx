@@ -3,6 +3,8 @@ import {theme} from "./theme"
 import { Event } from "./enums";
 import { Button, Card, CardActions, CardContent, CardHeader, Grid, IconButton, LinearProgress, TextField, Typography } from "@mui/material";
 import Delete, { DeleteOutlined } from '@mui/icons-material';
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import { ReactElement } from "react";
 
 type PostitProps = {events: Event[], MapLoc?: String}
 
@@ -15,7 +17,7 @@ const testEvent: Event = {
 };
 
 
-function Postit(props: PostitProps){
+function Postit(props: PostitProps):ReactElement{
     // One Test event:
     var time = testEvent.time;
     var loc = testEvent.location;
@@ -41,7 +43,7 @@ function Postit(props: PostitProps){
     // Fetch this variable:
     var currentPostitNumber = 0;
 return (
-    <Card sx={{ maxWidth: 300 , margin: 1, border: "8px solid #4C86A8"}} >
+    <Card sx={{ width: 300, minWidth: 300, height: "90%" , margin: 1, border: "8px solid #4C86A8"}} >
         <CardHeader
         avatar={
             <Typography variant="h6" component="div">
