@@ -4,6 +4,9 @@ import { useState } from "react";
 import Postit from "./Postit";
 import { Container } from "@mui/system";
 
+//
+import Mapcontainer from "./Mapcontainer";
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -19,7 +22,9 @@ function App() {
             spacing={2}
             sx={{ height: "100%", width: "100%" }}
           >
-            <Grid item xs={9}></Grid>
+            <Grid item xs={9}>
+              <Mapcontainer></Mapcontainer>
+            </Grid>
 
             <Grid item xs={3}></Grid>
           </Grid>
