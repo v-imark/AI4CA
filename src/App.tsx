@@ -3,6 +3,8 @@ import { theme } from "./theme";
 import { useState } from "react";
 import Postit from "./Postit";
 import { Container } from "@mui/system";
+import PostitGroup from "./PostitGroup";
+import InfoPanel from "./InfoPanel";
 
 //
 import Mapcontainer from "./Mapcontainer";
@@ -38,10 +40,12 @@ function App() {
             spacing={2}
             sx={{ height: "100%", width: "100%" }}
           >
-            <Grid item xs={7}></Grid>
-
-            <Grid item xs={5}>
-              <Postit events={[]}></Postit>
+            <Grid item xs={7} sx={{width: "100%"}}>
+              <InfoPanel></InfoPanel>
+            </Grid>
+              
+            <Grid item xs={5} sx={{width: "100%"}}>
+              <PostitGroup></PostitGroup>
             </Grid>
           </Grid>
         </Grid>

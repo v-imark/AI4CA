@@ -1,5 +1,5 @@
 export interface Event {
-    time: String,
+    time: Date,
     location: String,
     tweetText: String,
     tweetImage: String,
