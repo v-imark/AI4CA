@@ -123,6 +123,7 @@ function Histogram(props: HistogramProps) {
           onMouseLeave={() => {
             setHoveredWarning(null);
           }}
+          pointerEvents="bounding-box"
         >
           <Tooltip
             title={warning.time.toLocaleDateString() + ": " + warning.text}
