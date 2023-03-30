@@ -1,13 +1,18 @@
 export interface Event {
-    time: Date,
-    location: String,
-    tweetText: String,
-    tweetImage: String,
-    severity: number,
+  time: Date;
+  location: String;
+  tweetText: String;
+  tweetImage: String;
+  severity: number;
 }
 
 export interface DataSelection {
-    type: String,
-    selection: Event[],
-    closesWarning: String,
+  type: String;
+  selection: Event[];
+  closesWarning: String;
+}
+
+export interface Warning {
+  text: String;
+  time: Date;
 }

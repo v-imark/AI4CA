@@ -1,7 +1,9 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import * as d3 from "d3";
 import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { Warning } from "./enums";
 import { theme } from "./theme";
+import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
 
 type HistogramProps = {
@@ -10,12 +12,24 @@ type HistogramProps = {
   binSize?: 0 | number;
 };
 
+const Warnings: Warning[] = [
+  {
+    text: "Kraftigt regn i Norrköping, risk för översvämning",
+    time: new Date(2023, 0, 5),
+  },
+  {
+    text: "Kraftigt regn i Gävle, risk för översvämning",
+    time: new Date(2023, 0, 10),
+  },
+];
+
 function Histogram(props: HistogramProps) {
   const ref = useRef<HTMLInputElement>(null);
   const graphRef = useRef<SVGSVGElement>(null);
   const { width, height } = useDimensions(ref);
 
   const [selectedBucket, setSelectedBucket] = useState<number | null>(null);
+  const [hoveredWarning, setHoveredWarning] = useState<number | null>(null);
 
   const BUCKET_PADDING = 4;
   const MARGIN = 10;
@@ -23,7 +37,6 @@ function Histogram(props: HistogramProps) {
   const dateTimeExtent = d3.extent(props.dates, function (d) {
     return d;
   }) as [Date, Date];
-  console.log(dateTimeExtent);
   dateTimeExtent[1] = d3.timeDay.offset(dateTimeExtent[1], 1);
 
   const bins = d3.timeDay.range(
@@ -46,7 +59,7 @@ function Histogram(props: HistogramProps) {
       .domain(dateTimeExtent)
       .thresholds(bins);
     return bucketGenerator(props.dates);
-  }, [xScale]);
+  }, [xScale, bins]);
 
   const yScale = useMemo(() => {
     const max = Math.max(...buckets.map((bucket) => bucket?.length));
@@ -54,8 +67,8 @@ function Histogram(props: HistogramProps) {
     return d3
       .scaleLinear()
       .range([height - 20, -5])
-      .domain([0, max + 1]);
-  }, [props.data, height]);
+      .domain([0, max * 1.5]);
+  }, [buckets, height]);
 
   const binColor = (n: number) => {
     if (n > 8) return theme.palette.error;
@@ -63,8 +76,6 @@ function Histogram(props: HistogramProps) {
 
     return theme.palette.success;
   };
-
-  console.log(buckets);
 
   const allRects = buckets.map((bucket, i) => {
     if (bucket.x0 == undefined || bucket.x1 == undefined) {
@@ -90,22 +101,56 @@ function Histogram(props: HistogramProps) {
         y={y}
         height={bucketHeight}
         onClick={() => setSelectedBucket((prev) => (prev == i ? null : i))}
-      >
-        <rect
-          fill={theme.palette.error.main}
+      ></rect>
+    );
+  });
+
+  const warningMarkers = Warnings.map((warning, index) => {
+    const x = xScale(warning.time);
+    const size = index == hoveredWarning ? 30 : 24;
+    const offset = hoveredWarning == index ? 3 : 0;
+
+    return (
+      <>
+        <svg
+          width={size}
+          height={size}
+          x={x - size / 2}
+          y={yScale.range()[1] + 8 - offset}
+          onMouseEnter={() => {
+            setHoveredWarning(index);
+          }}
+          onMouseLeave={() => {
+            setHoveredWarning(null);
+          }}
+        >
+          <Tooltip
+            title={warning.time.toLocaleDateString() + ": " + warning.text}
+          >
+            <ReportIcon
+              fontSize={index == hoveredWarning ? "small" : "large"}
+              color="error"
+            />
+          </Tooltip>
+        </svg>
+
+        <line
+          x1={x}
+          y1={yScale.range()[0]}
+          x2={x}
+          y2={yScale.range()[1] + 28}
           stroke={theme.palette.error.main}
-          x={x}
-          width={bucketWidth}
-          y={y}
-          height={bucketHeight}
+          strokeWidth={2}
+          stroke-dasharray="3 3"
         />
-      </rect>
+      </>
     );
   });
 
   useEffect(() => {
     const svg = d3.select(graphRef.current);
     svg.selectAll("g").remove();
+    svg.selectAll("text").remove();
 
     const xAxis = d3.axisBottom(xScale);
     svg
@@ -137,6 +182,7 @@ function Histogram(props: HistogramProps) {
     >
       <svg ref={graphRef} width={width} height={height}>
         {allRects}
+        {warningMarkers}
       </svg>
     </div>
   );
