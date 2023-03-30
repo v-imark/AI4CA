@@ -57,16 +57,18 @@ function Timeline() {
         <Grid item xs={2} sx={{ width: "100%" }}>
           <Stack
             direction="row"
-            justifyContent="space-between"
+            justifyContent="center"
             alignItems="center"
             spacing={0}
             width="100%"
+            height="100%"
           >
-            <Box width={"20%"} marginX={2}>
+            <Box width={"20%"} height="100%" marginX={2} zIndex={12}>
               <Slider
                 value={binSize}
                 min={1}
                 size="small"
+                aria-label=""
                 max={5}
                 step={1}
                 valueLabelDisplay="auto"
