@@ -36,7 +36,7 @@ function InfoPanel() {
                 margin: 0,
               }}
             >
-                <Divider/>
+              <Divider />
               {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
                 const labelId = `checkbox-list-secondary-label-${index}`;
                 return (
@@ -50,13 +50,13 @@ function InfoPanel() {
                   </ListItem>
                 );
               })}
-              <Divider/>
+              <Divider />
             </List>
           </CardContent>
         </Card>
       </Grid>
 
-      <Grid item xs={6}>
+      <Grid item xs={6} margin={0}>
         <Card sx={{ height: "100%", width: "100%" }}>
           <CardActionArea>
             <CardMedia

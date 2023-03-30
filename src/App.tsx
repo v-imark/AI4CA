@@ -18,6 +18,7 @@ function App() {
       <Grid
         container
         spacing={2}
+        columnSpacing={0}
         sx={{
           height: "100%",
           width: "100%",
@@ -31,7 +32,6 @@ function App() {
             spacing={2}
             sx={{ height: "100%", width: "100%" }}
           >
-
             <Grid item xs={8}>
               <Mapcontainer></Mapcontainer>
             </Grid>
@@ -42,18 +42,18 @@ function App() {
           </Grid>
         </Grid>
 
-        <Grid item xs={7}>
+        <Grid item xs={7} paddingLeft={0}>
           <Grid
             container
             direction="column"
             spacing={2}
             sx={{ height: "100%", width: "100%" }}
           >
-            <Grid item xs={7} sx={{width: "100%"}}>
+            <Grid item xs={7} sx={{ width: "100%" }} paddingLeft={0}>
               <InfoPanel></InfoPanel>
             </Grid>
-              
-            <Grid item xs={5} sx={{width: "100%"}}>
+
+            <Grid item xs={5} sx={{ width: "100%" }} paddingLeft={0}>
               <PostitGroup></PostitGroup>
             </Grid>
           </Grid>
