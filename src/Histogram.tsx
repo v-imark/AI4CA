@@ -101,6 +101,7 @@ function Histogram(props: HistogramProps) {
         y={y}
         height={bucketHeight}
         onClick={() => setSelectedBucket((prev) => (prev == i ? null : i))}
+        cursor="pointer"
       ></rect>
     );
   });

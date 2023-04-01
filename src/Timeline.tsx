@@ -1,17 +1,24 @@
+import { DateRange } from "@mui/icons-material";
 import {
   Box,
   Card,
   CardContent,
   CardHeader,
   Grid,
+  IconButton,
+  Popover,
   Slider,
+  SliderValueLabelProps,
   Stack,
+  Tooltip,
+  Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Histogram from "./Histogram";
 
 function Timeline() {
-  const data = [1, 2, 2, 3, 4, 5, 6, 6, 6, 9];
   const dates = [
     new Date(2023, 0, 1),
     new Date(2023, 0, 1),
@@ -44,6 +51,49 @@ function Timeline() {
   ];
 
   const [binSize, setBinSize] = useState(1);
+  const [dateRange, setDateRange] = useState([
+    dates[0],
+    dates[dates.length - 1],
+  ]);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const data = useMemo(() => {
+    const filteredDates: Date[] = [];
+    for (const date of dates) {
+      if (date >= dateRange[0] && date <= dateRange[1]) {
+        filteredDates.push(date);
+      }
+    }
+    return filteredDates;
+  }, [dateRange]);
+
+  console.log(data);
+
+  function ValueLabelComponent(props: SliderValueLabelProps) {
+    const { children, value } = props;
+
+    return (
+      <Tooltip
+        enterTouchDelay={0}
+        placement="top"
+        title={"Days: " + value}
+        arrow
+      >
+        {children}
+      </Tooltip>
+    );
+  }
 
   return (
     <Card sx={{ height: "100%", width: "100%" }}>
@@ -57,28 +107,69 @@ function Timeline() {
         <Grid item xs={2} sx={{ width: "100%" }}>
           <Stack
             direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={0}
-            width="100%"
-            height="100%"
+            spacing={2}
+            justifyContent="flex-end"
+            paddingX={2}
           >
-            <Box width={"20%"} height="100%" marginX={2} zIndex={12}>
+            <Typography sx={{ alignSelf: "center" }}>Bin Size:</Typography>
+            <Box width={"20%"} paddingTop={1}>
               <Slider
                 value={binSize}
                 min={1}
                 size="small"
                 aria-label=""
                 max={5}
+                sx={{ alignSelf: "center" }}
                 step={1}
+                slots={{ valueLabel: ValueLabelComponent }}
                 valueLabelDisplay="auto"
                 onChange={(event, value) => setBinSize(value as number)}
               />
             </Box>
+            <Typography sx={{ alignSelf: "center" }}>Date Range:</Typography>
+            <IconButton sx={{ marginLeft: -1 }} onClick={handleClick}>
+              <DateRange />
+            </IconButton>
           </Stack>
+          <Popover
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <Box display="flex" flexDirection="column">
+                <DatePicker
+                  label="Start Date"
+                  slotProps={{ textField: { size: "small" } }}
+                  sx={{ width: 180, margin: 1 }}
+                  value={dateRange[0]}
+                  onChange={(value) =>
+                    setDateRange((prev: Date[]) => [value, prev[1]] as Date[])
+                  }
+                />
+                <DatePicker
+                  label="End Date"
+                  slotProps={{ textField: { size: "small" } }}
+                  sx={{ width: 180, margin: 1 }}
+                  value={dateRange[1]}
+                  onChange={(value) =>
+                    setDateRange((prev: Date[]) => [prev[0], value] as Date[])
+                  }
+                />
+              </Box>
+            </LocalizationProvider>
+          </Popover>
         </Grid>
         <Grid item xs={10} sx={{ width: "100%" }}>
-          <Histogram dates={dates} binSize={binSize} />
+          <Histogram dates={data as Date[]} binSize={binSize} />
         </Grid>
       </Grid>
     </Card>
