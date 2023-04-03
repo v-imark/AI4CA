@@ -1,0 +1,135 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.04752, 59.32872]
+      },
+      "properties": {
+        "name": "Stockholm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.05582, 59.33424]
+      },
+      "properties": {
+        "name": "Stockholm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.04008, 59.32415]
+      },
+      "properties": {
+        "name": "Stockholm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.07174, 59.35444]
+      },
+      "properties": {
+        "name": "Stockholm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.04927, 59.32982]
+      },
+      "properties": {
+        "name": "Stockholm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.2158, 59.27047]
+      },
+      "properties": {
+        "name": "Eskilstuna"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [11.95856, 57.70788]
+      },
+      "properties": {
+        "name": "Gothenburg"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [11.95095, 57.69564]
+      },
+      "properties": {
+        "name": "Gothenburg"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [11.97435, 57.70995]
+      },
+      "properties": {
+        "name": "Gothenburg"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [11.96549, 57.6916]
+      },
+      "properties": {
+        "name": "Gothenburg"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.0028, 55.60708]
+      },
+      "properties": {
+        "name": "Malmö"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.00801, 55.5968]
+      },
+      "properties": {
+        "name": "Malmö"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.99515, 55.6103]
+      },
+      "properties": {
+        "name": "Malmö"
+      }
+    }
+  ]
+}

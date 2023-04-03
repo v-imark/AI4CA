@@ -1,3 +1,4 @@
+import { Card } from "@mui/material";
 import Box from "@mui/material/Box";
 import MainMap from "./MainMap";
 
@@ -6,12 +7,14 @@ import Userfilters from "./Userfilters";
 
 function Mapcontainer() {
   return (
-    <Box
+    <Card
       sx={{
         height: "100%",
         width: "100%",
         backgroundColor: "darkblue",
         display: "flex",
+        margin: 0,
+        padding: 0,
       }}
     >
       <Box
@@ -31,7 +34,7 @@ function Mapcontainer() {
       <Box sx={{ width: "70%", backgroundColor: "lightgray" }}>
         <MainMap />
       </Box>
-    </Box>
+    </Card>
   );
 }
 
