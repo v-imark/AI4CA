@@ -74,6 +74,8 @@ function MainMap() {
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
         </Source>
+
+        
       </Map>
     </div>
   );
