@@ -143,7 +143,7 @@ function Histogram(props: HistogramProps) {
           y2={yScale.range()[1] + 28}
           stroke={theme.palette.error.main}
           strokeWidth={2}
-          stroke-dasharray="3 3"
+          strokeDasharray="3 3"
         />
       </>
     );
