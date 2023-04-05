@@ -9,13 +9,15 @@ export const clusterLayer: LayerProps = {
     "circle-color": [
       "step",
       ["get", "point_count"],
-      "#51bbd6",
+      "#fff",
       100,
-      "#f1f075",
+      "#fff",
       750,
-      "#f28cb1",
+      "#fff",
     ],
-    "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+    "circle-radius": ["step", ["get", "point_count"], 20, 80, 30, 730, 40],
+    "circle-stroke-width": 6,
+    "circle-stroke-color": "#4C86A8",
   },
 };
 
@@ -27,7 +29,7 @@ export const clusterCountLayer: LayerProps = {
   layout: {
     "text-field": "{point_count_abbreviated}",
     "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-    "text-size": 12,
+    "text-size": 14,
   },
 };
 
@@ -37,9 +39,9 @@ export const unclusteredPointLayer: LayerProps = {
   source: "earthquakes",
   filter: ["!", ["has", "point_count"]],
   paint: {
-    "circle-color": "#11b4da",
-    "circle-radius": 4,
-    "circle-stroke-width": 1,
+    "circle-color": "#4C86A8",
+    "circle-radius": 6,
+    "circle-stroke-width": 2,
     "circle-stroke-color": "#fff",
   },
 };

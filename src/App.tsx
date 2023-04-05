@@ -11,6 +11,9 @@ import InfoPanel from "./InfoPanel";
 
 //
 import Mapcontainer from "./Mapcontainer";
+import { create } from "zustand";
+import { ids } from "./processData";
+import { StateStore } from "./enums";
 
 function App() {
   return (

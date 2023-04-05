@@ -17,43 +17,27 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Histogram from "./Histogram";
+import { timeData, useBearStore } from "./processData";
 
 function Timeline() {
-  const dates = [
-    new Date(2023, 0, 1),
-    new Date(2023, 0, 1),
-    new Date(2023, 0, 2),
-    new Date(2023, 0, 2),
-    new Date(2023, 0, 3),
-    new Date(2023, 0, 4),
-    new Date(2023, 0, 5),
-    new Date(2023, 0, 5),
-    new Date(2023, 0, 5),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 8),
-    new Date(2023, 0, 9),
-    new Date(2023, 0, 12),
-    new Date(2023, 0, 13),
-    new Date(2023, 0, 13),
-    new Date(2023, 0, 14),
-    new Date(2023, 0, 14),
-    new Date(2023, 0, 14),
-    new Date(2023, 0, 15),
-    new Date(2023, 0, 16),
-    new Date(2023, 0, 16),
-    new Date(2023, 0, 17),
-  ];
-
   const [binSize, setBinSize] = useState(1);
-  const [dateRange, setDateRange] = useState([
-    dates[0],
-    dates[dates.length - 1],
+
+  const data_ids = useBearStore((state) => state.data);
+
+  const [latestDate, oldestDate] = useMemo(() => {
+    const latest = timeData.reduce(function (r, a) {
+      return r.created_at > a.created_at ? r : a;
+    });
+    const oldest = timeData.reduce(function (r, a) {
+      return r.created_at < a.created_at ? r : a;
+    });
+
+    return [latest.created_at, oldest.created_at];
+  }, [timeData]);
+
+  const [dateRange, setDateRange] = useState<[Date, Date]>([
+    oldestDate,
+    latestDate,
   ]);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -69,16 +53,18 @@ function Timeline() {
   const open = Boolean(anchorEl);
 
   const data = useMemo(() => {
-    const filteredDates: Date[] = [];
-    for (const date of dates) {
-      if (date >= dateRange[0] && date <= dateRange[1]) {
-        filteredDates.push(date);
+    const newData = timeData.filter((item) =>
+      data_ids.find((id) => item.id == id)
+    );
+
+    const filteredDates = [];
+    for (const item of newData) {
+      if (item?.created_at >= dateRange[0] && item.created_at <= dateRange[1]) {
+        filteredDates.push(item);
       }
     }
     return filteredDates;
-  }, [dateRange]);
-
-  console.log(data);
+  }, [dateRange, data_ids]);
 
   function ValueLabelComponent(props: SliderValueLabelProps) {
     const { children, value } = props;
@@ -152,7 +138,9 @@ function Timeline() {
                   sx={{ width: 180, margin: 1 }}
                   value={dateRange[0]}
                   onChange={(value) =>
-                    setDateRange((prev: Date[]) => [value, prev[1]] as Date[])
+                    setDateRange(
+                      (prev: [Date, Date]) => [value, prev[1]] as [Date, Date]
+                    )
                   }
                 />
                 <DatePicker
@@ -161,7 +149,9 @@ function Timeline() {
                   sx={{ width: 180, margin: 1 }}
                   value={dateRange[1]}
                   onChange={(value) =>
-                    setDateRange((prev: Date[]) => [prev[0], value] as Date[])
+                    setDateRange(
+                      (prev: [Date, Date]) => [prev[0], value] as [Date, Date]
+                    )
                   }
                 />
               </Box>
@@ -169,7 +159,7 @@ function Timeline() {
           </Popover>
         </Grid>
         <Grid item xs={10} sx={{ width: "100%" }}>
-          <Histogram dates={data as Date[]} binSize={binSize} />
+          <Histogram data={data} dateTimeExtent={dateRange} binSize={binSize} />
         </Grid>
       </Grid>
     </Card>
