@@ -1,5 +1,6 @@
 import { Card } from "@mui/material";
 import Box from "@mui/material/Box";
+import ContextMap from "./ContextMap";
 import MainMap from "./MainMap";
 
 //
@@ -25,7 +26,9 @@ function Mapcontainer() {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ height: "40%", width: "100%" }}></Box>
+        <Box sx={{ height: "40%", width: "100%"}}>
+          <ContextMap></ContextMap>
+        </Box>
         <Box sx={{ height: "60%", width: "100%" }}>
           <Userfilters></Userfilters>
         </Box>
