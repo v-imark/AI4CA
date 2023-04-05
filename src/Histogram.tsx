@@ -7,15 +7,15 @@ import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
 
 type HistogramProps = {
-  data?: number[];
-  dates: Date[];
+  data: any[];
+  dateTimeExtent: [Date, Date];
   binSize?: 0 | number;
 };
 
 const Warnings: Warning[] = [
   {
     text: "Kraftigt regn i Norrköping, risk för översvämning",
-    time: new Date(2023, 0, 5),
+    time: new Date(2021, 7, 17),
   },
   {
     text: "Kraftigt regn i Gävle, risk för översvämning",
@@ -23,7 +23,7 @@ const Warnings: Warning[] = [
   },
 ];
 
-function Histogram(props: HistogramProps) {
+function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
   const ref = useRef<HTMLInputElement>(null);
   const graphRef = useRef<SVGSVGElement>(null);
   const { width, height } = useDimensions(ref);
@@ -34,15 +34,11 @@ function Histogram(props: HistogramProps) {
   const BUCKET_PADDING = 4;
   const MARGIN = 10;
   const parseTime = d3.timeParse("%Y-%m-%d");
-  const dateTimeExtent = d3.extent(props.dates, function (d) {
-    return d;
-  }) as [Date, Date];
-  dateTimeExtent[1] = d3.timeDay.offset(dateTimeExtent[1], 1);
 
   const bins = d3.timeDay.range(
     d3.timeDay.offset(dateTimeExtent[0], -1),
     d3.timeDay.offset(dateTimeExtent[1], 1),
-    props.binSize
+    binSize
   );
 
   const xScale = useMemo(() => {
@@ -50,7 +46,7 @@ function Histogram(props: HistogramProps) {
       .scaleTime()
       .domain(dateTimeExtent)
       .range([40, width - 20]);
-  }, [props.dates, width]);
+  }, [dateTimeExtent, width]);
 
   const buckets = useMemo(() => {
     const bucketGenerator = d3
@@ -58,7 +54,7 @@ function Histogram(props: HistogramProps) {
       .value((d) => d)
       .domain(dateTimeExtent)
       .thresholds(bins);
-    return bucketGenerator(props.dates);
+    return bucketGenerator(data.map((item) => item.created_at));
   }, [xScale, bins]);
 
   const yScale = useMemo(() => {
@@ -66,16 +62,9 @@ function Histogram(props: HistogramProps) {
 
     return d3
       .scaleLinear()
-      .range([height - 20, -5])
-      .domain([0, max * 1.5]);
+      .range([height - 20, -8])
+      .domain([0, max * 1.2]);
   }, [buckets, height]);
-
-  const binColor = (n: number) => {
-    if (n > 8) return theme.palette.error;
-    if (n > 5) return theme.palette.warning;
-
-    return theme.palette.success;
-  };
 
   const allRects = buckets.map((bucket, i) => {
     if (bucket.x0 == undefined || bucket.x1 == undefined) {
@@ -167,7 +156,7 @@ function Histogram(props: HistogramProps) {
       .append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 20)
+      .attr("y", 15)
       .attr("x", -80)
       .text("Events");
   }, [xScale, yScale, graphRef]);
