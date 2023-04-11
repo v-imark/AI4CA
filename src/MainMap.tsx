@@ -17,7 +17,14 @@ import { theme } from "./theme";
 import MapMarker from "./MapMarker";
 import { ViewPort } from "./enums";
 
-function MainMap({ viewport, setViewport, mapRef, data }: ViewPort) {
+function MainMap({
+  viewport,
+  setViewport,
+  mapRef,
+  data,
+  clusters,
+  supercluster,
+}: ViewPort) {
   const divRef = useRef(null);
   const { width, height } = useDimensions(divRef);
   const [selected, setSelected] = useState(null);
@@ -38,13 +45,6 @@ function MainMap({ viewport, setViewport, mapRef, data }: ViewPort) {
       ? (mapRef.current.getMap().getBounds().toArray().flat() as BBox)
       : undefined;
   }, [viewport]);
-
-  const { clusters, supercluster } = useSupercluster({
-    points: data,
-    bounds: bounds,
-    zoom: viewport.zoom,
-    options: { radius: 75 },
-  });
 
   const handleClusterClick = (
     event: MapboxEvent<MouseEvent>,

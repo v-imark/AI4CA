@@ -9,6 +9,8 @@ import { useMemo, useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
 import { geoData } from "./processData";
 import { StateStore } from "./enums";
+import useSupercluster from "use-supercluster";
+import { BBox } from "geojson";
 
 function Mapcontainer(props: StateStore) {
   const data = useMemo(() => {
@@ -19,10 +21,37 @@ function Mapcontainer(props: StateStore) {
   }, [props.data]);
 
   const mapRef = useRef<MapRef>(null);
+  const contextRef = useRef<MapRef>(null);
   const [viewport, setViewport] = useState({
     latitude: 62.862626,
     longitude: 15.186464,
     zoom: 1,
+  });
+
+  const bounds = useMemo(() => {
+    return mapRef.current
+      ? (mapRef.current.getMap().getBounds().toArray().flat() as BBox)
+      : undefined;
+  }, [viewport]);
+
+  const contextBounds = useMemo(() => {
+    return contextRef.current
+      ? (contextRef.current.getMap().getBounds().toArray().flat() as BBox)
+      : undefined;
+  }, [viewport]);
+
+  const { clusters, supercluster } = useSupercluster({
+    points: data,
+    bounds: bounds,
+    zoom: viewport.zoom,
+    options: { radius: 75 },
+  });
+
+  const contextClusters = useSupercluster({
+    points: data,
+    bounds: contextBounds,
+    zoom: viewport.zoom,
+    options: { radius: 75 },
   });
 
   return (
@@ -50,6 +79,8 @@ function Mapcontainer(props: StateStore) {
             setViewport={setViewport}
             mapRef={mapRef}
             data={data}
+            clusters={contextClusters.clusters}
+            contextRef={contextRef}
           />
         </Box>
         <Box sx={{ height: "60%", width: "100%" }}>
@@ -63,6 +94,8 @@ function Mapcontainer(props: StateStore) {
           setViewport={setViewport}
           mapRef={mapRef}
           data={data}
+          clusters={clusters}
+          supercluster={supercluster}
         />
       </Box>
     </Card>
