@@ -2,7 +2,7 @@ import { useState } from "react";
 import { theme } from "./theme";
 
 type MapMarkerProps = {
-  pointCount: number;
+  pointCount: String;
   size: number;
   isCluster: Boolean;
   selected?: Boolean;
