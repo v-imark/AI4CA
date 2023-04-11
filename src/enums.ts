@@ -1,3 +1,5 @@
+import { MapRef } from "react-map-gl";
+
 export interface Event {
   id: number;
   tweet_id: number;
@@ -17,6 +19,18 @@ export interface Event {
   gp: number;
   lon: number;
   lat: number;
+}
+
+export interface ViewPort{
+    viewport:{latitude: number,
+    longitude: number,
+    zoom: number},
+    mapRef: React.RefObject<MapRef>,
+    setViewport: ({latitude,
+      longitude,
+      zoom}:{latitude: number,
+        longitude: number,
+        zoom: number}) => void
 }
 
 export interface DataSelection {

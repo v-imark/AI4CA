@@ -5,8 +5,19 @@ import MainMap from "./MainMap";
 
 //
 import Userfilters from "./Userfilters";
+import { useRef, useState } from "react";
+import { MapRef } from "react-map-gl";
+
+
 
 function Mapcontainer() {
+  const mapRef = useRef<MapRef>(null);
+  const [viewport, setViewport] = useState({
+    latitude: 62.862626,
+    longitude: 15.186464,
+    zoom: 1,
+  });
+  
   return (
     <Card
       sx={{
@@ -27,7 +38,7 @@ function Mapcontainer() {
         }}
       >
         <Box sx={{ height: "40%", width: "100%"}}>
-          <ContextMap></ContextMap>
+          <ContextMap viewport={viewport} setViewport={setViewport} mapRef={mapRef}/>
         </Box>
         <Box sx={{ height: "60%", width: "100%" }}>
           <Userfilters></Userfilters>
@@ -35,7 +46,7 @@ function Mapcontainer() {
       </Box>
 
       <Box sx={{ width: "70%", backgroundColor: "lightgray" }}>
-        <MainMap />
+        <MainMap viewport={viewport} setViewport={setViewport} mapRef={mapRef} />
       </Box>
     </Card>
   );
