@@ -17,14 +17,10 @@ import { theme } from "./theme";
 import MapMarker from "./MapMarker";
 import { ViewPort } from "./enums";
 
-function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
+function MainMap({ viewport, setViewport, mapRef, data }: ViewPort) {
   const divRef = useRef(null);
-  const TOKEN = MAPBOX_TOKEN;
-
   const { width, height } = useDimensions(divRef);
-
   const [selected, setSelected] = useState(null);
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,7 +40,7 @@ function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
   }, [viewport]);
 
   const { clusters, supercluster } = useSupercluster({
-    points: geoData,
+    points: data,
     bounds: bounds,
     zoom: viewport.zoom,
     options: { radius: 75 },

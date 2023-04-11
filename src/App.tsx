@@ -72,7 +72,11 @@ function App() {
             sx={{ height: "100%", width: "100%" }}
           >
             <Grid item xs={8}>
-              <Mapcontainer></Mapcontainer>
+              <Mapcontainer
+                data={state.data}
+                selection={state.selection}
+                postItGroups={state.postItGroups}
+              ></Mapcontainer>
             </Grid>
 
             <Grid item xs={4}>

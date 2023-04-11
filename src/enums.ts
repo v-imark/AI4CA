@@ -33,6 +33,15 @@ export interface ViewPort {
     longitude: number;
     zoom: number;
   }) => void;
+  data: {
+    type: string;
+    id: number;
+    geometry: {
+      type: string;
+      coordinates: number[];
+    };
+    properties: {};
+  }[];
 }
 
 export interface DataSelection {

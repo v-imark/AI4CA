@@ -5,19 +5,26 @@ import MainMap from "./MainMap";
 
 //
 import Userfilters from "./Userfilters";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
+import { geoData } from "./processData";
+import { StateStore } from "./enums";
 
+function Mapcontainer(props: StateStore) {
+  const data = useMemo(() => {
+    const newData = geoData.filter((item) =>
+      props.data.find((id) => item.id == id)
+    );
+    return newData;
+  }, [props.data]);
 
-
-function Mapcontainer() {
   const mapRef = useRef<MapRef>(null);
   const [viewport, setViewport] = useState({
     latitude: 62.862626,
     longitude: 15.186464,
     zoom: 1,
   });
-  
+
   return (
     <Card
       sx={{
@@ -37,8 +44,13 @@ function Mapcontainer() {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ height: "40%", width: "100%"}}>
-          <ContextMap viewport={viewport} setViewport={setViewport} mapRef={mapRef}/>
+        <Box sx={{ height: "40%", width: "100%" }}>
+          <ContextMap
+            viewport={viewport}
+            setViewport={setViewport}
+            mapRef={mapRef}
+            data={data}
+          />
         </Box>
         <Box sx={{ height: "60%", width: "100%" }}>
           <Userfilters></Userfilters>
@@ -46,7 +58,12 @@ function Mapcontainer() {
       </Box>
 
       <Box sx={{ width: "70%", backgroundColor: "lightgray" }}>
-        <MainMap viewport={viewport} setViewport={setViewport} mapRef={mapRef} />
+        <MainMap
+          viewport={viewport}
+          setViewport={setViewport}
+          mapRef={mapRef}
+          data={data}
+        />
       </Box>
     </Card>
   );
