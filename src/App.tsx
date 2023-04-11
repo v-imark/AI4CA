@@ -1,6 +1,6 @@
 import { Box, Grid, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Postit from "./Postit";
 import { Container } from "@mui/system";
 
@@ -12,10 +12,46 @@ import InfoPanel from "./InfoPanel";
 //
 import Mapcontainer from "./Mapcontainer";
 import { create } from "zustand";
-import { ids } from "./processData";
+import { events, ids, timeData } from "./processData";
 import { StateStore } from "./enums";
 
 function App() {
+  const [latestDate, oldestDate] = useMemo(() => {
+    const latest = timeData.reduce(function (r, a) {
+      return r.created_at > a.created_at ? r : a;
+    });
+    const oldest = timeData.reduce(function (r, a) {
+      return r.created_at < a.created_at ? r : a;
+    });
+
+    return [latest.created_at, oldest.created_at];
+  }, [timeData]);
+
+  const [dateRange, setDateRange] = useState<[Date, Date]>([
+    oldestDate,
+    latestDate,
+  ]);
+
+  const [state, setState] = useState<StateStore>({
+    postItGroups: null,
+    data: ids,
+    selection: null,
+  });
+
+  useEffect(() => {
+    const newIds: number[] = [];
+    for (const item of timeData) {
+      if (item?.created_at >= dateRange[0] && item.created_at <= dateRange[1]) {
+        newIds.push(item.id);
+      }
+    }
+    setState({
+      postItGroups: state.postItGroups,
+      data: newIds,
+      selection: state.selection,
+    });
+  }, [dateRange]);
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -40,7 +76,13 @@ function App() {
             </Grid>
 
             <Grid item xs={4}>
-              <Timeline />
+              <Timeline
+                data={state.data}
+                selection={state.selection}
+                postItGroups={state.postItGroups}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+              />
             </Grid>
           </Grid>
         </Grid>

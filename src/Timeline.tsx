@@ -18,27 +18,17 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Histogram from "./Histogram";
 import { timeData, useBearStore } from "./processData";
+import { StateStore } from "./enums";
 
-function Timeline() {
+interface TimelineProps extends StateStore {
+  dateRange: [Date, Date];
+  setDateRange: React.Dispatch<React.SetStateAction<[Date, Date]>>;
+}
+
+function Timeline(props: TimelineProps) {
   const [binSize, setBinSize] = useState(1);
 
-  const data_ids = useBearStore((state) => state.data);
-
-  const [latestDate, oldestDate] = useMemo(() => {
-    const latest = timeData.reduce(function (r, a) {
-      return r.created_at > a.created_at ? r : a;
-    });
-    const oldest = timeData.reduce(function (r, a) {
-      return r.created_at < a.created_at ? r : a;
-    });
-
-    return [latest.created_at, oldest.created_at];
-  }, [timeData]);
-
-  const [dateRange, setDateRange] = useState<[Date, Date]>([
-    oldestDate,
-    latestDate,
-  ]);
+  //const data_ids = useBearStore((state) => state.data);
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -54,17 +44,10 @@ function Timeline() {
 
   const data = useMemo(() => {
     const newData = timeData.filter((item) =>
-      data_ids.find((id) => item.id == id)
+      props.data.find((id) => item.id == id)
     );
-
-    const filteredDates = [];
-    for (const item of newData) {
-      if (item?.created_at >= dateRange[0] && item.created_at <= dateRange[1]) {
-        filteredDates.push(item);
-      }
-    }
-    return filteredDates;
-  }, [dateRange, data_ids]);
+    return newData;
+  }, [props.dateRange, props.data]);
 
   function ValueLabelComponent(props: SliderValueLabelProps) {
     const { children, value } = props;
@@ -136,9 +119,9 @@ function Timeline() {
                   label="Start Date"
                   slotProps={{ textField: { size: "small" } }}
                   sx={{ width: 180, margin: 1 }}
-                  value={dateRange[0]}
+                  value={props.dateRange[0]}
                   onChange={(value) =>
-                    setDateRange(
+                    props.setDateRange(
                       (prev: [Date, Date]) => [value, prev[1]] as [Date, Date]
                     )
                   }
@@ -147,9 +130,9 @@ function Timeline() {
                   label="End Date"
                   slotProps={{ textField: { size: "small" } }}
                   sx={{ width: 180, margin: 1 }}
-                  value={dateRange[1]}
+                  value={props.dateRange[1]}
                   onChange={(value) =>
-                    setDateRange(
+                    props.setDateRange(
                       (prev: [Date, Date]) => [prev[0], value] as [Date, Date]
                     )
                   }
@@ -159,7 +142,11 @@ function Timeline() {
           </Popover>
         </Grid>
         <Grid item xs={10} sx={{ width: "100%" }}>
-          <Histogram data={data} dateTimeExtent={dateRange} binSize={binSize} />
+          <Histogram
+            data={data}
+            dateTimeExtent={props.dateRange}
+            binSize={binSize}
+          />
         </Grid>
       </Grid>
     </Card>

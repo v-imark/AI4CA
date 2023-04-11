@@ -80,6 +80,26 @@ function MainMap() {
     setSelected(cluster.id);
   };
 
+  const handleClick = (
+    event: MapboxEvent<MouseEvent>,
+    cluster: any,
+    longitude: number,
+    latitude: number
+  ) => {
+    if (selected == cluster.id) {
+      setSelected(null);
+      return;
+    }
+
+    mapRef.current?.flyTo({
+      center: [longitude, latitude],
+      duration: 2000,
+      zoom: viewport.zoom + 0.7,
+    });
+
+    setSelected(cluster.id);
+  };
+
   return (
     <div ref={divRef} style={{ width: "100%", height: "100%" }}>
       <Map
@@ -136,6 +156,9 @@ function MainMap() {
               key={`cluster-${cluster.properties.name}-${longitude}-${latitude}`}
               latitude={latitude}
               longitude={longitude}
+              onClick={(event) =>
+                handleClick(event, cluster, longitude, latitude)
+              }
             >
               <MapMarker
                 pointCount={pointCount}

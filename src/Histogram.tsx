@@ -9,7 +9,7 @@ import { useDimensions } from "./useDimensions";
 type HistogramProps = {
   data: any[];
   dateTimeExtent: [Date, Date];
-  binSize?: 0 | number;
+  binSize: 0 | number;
 };
 
 const Warnings: Warning[] = [
@@ -35,10 +35,10 @@ function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
   const MARGIN = 10;
   const parseTime = d3.timeParse("%Y-%m-%d");
 
-  const bins = d3.timeDay.range(
-    d3.timeDay.offset(dateTimeExtent[0], -1),
-    d3.timeDay.offset(dateTimeExtent[1], 1),
-    binSize
+  const bins = d3.timeHour.range(
+    d3.timeHour.offset(dateTimeExtent[0], -24),
+    d3.timeHour.offset(dateTimeExtent[1], 24),
+    binSize * 12
   );
 
   const xScale = useMemo(() => {

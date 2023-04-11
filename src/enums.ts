@@ -1,7 +1,7 @@
-export interface Event {
+export interface DataEvent {
   id: number;
   tweet_id: number;
-  created_at: String;
+  created_at: Date;
   lang: String;
   author_id: number;
   text: String;
@@ -21,7 +21,7 @@ export interface Event {
 
 export interface DataSelection {
   type: String;
-  selection: Event[];
+  selection: DataEvent[];
   closesWarning: String;
 }
 
@@ -40,4 +40,9 @@ export interface StateStore {
   postItGroups: PostIt[] | null;
   data: number[];
   selection: PostIt | null;
+}
+
+export interface StateProps {
+  state: StateStore;
+  setState: (state: StateStore) => void;
 }
