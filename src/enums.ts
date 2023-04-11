@@ -1,9 +1,9 @@
 import { MapRef } from "react-map-gl";
 
-export interface Event {
+export interface DataEvent {
   id: number;
   tweet_id: number;
-  created_at: String;
+  created_at: Date;
   lang: String;
   author_id: number;
   text: String;
@@ -21,21 +21,32 @@ export interface Event {
   lat: number;
 }
 
-export interface ViewPort{
-    viewport:{latitude: number,
-    longitude: number,
-    zoom: number},
-    mapRef: React.RefObject<MapRef>,
-    setViewport: ({latitude,
-      longitude,
-      zoom}:{latitude: number,
-        longitude: number,
-        zoom: number}) => void
+export interface ViewPort {
+  viewport: { latitude: number; longitude: number; zoom: number };
+  mapRef: React.RefObject<MapRef>;
+  setViewport: ({
+    latitude,
+    longitude,
+    zoom,
+  }: {
+    latitude: number;
+    longitude: number;
+    zoom: number;
+  }) => void;
+  data: {
+    type: string;
+    id: number;
+    geometry: {
+      type: string;
+      coordinates: number[];
+    };
+    properties: {};
+  }[];
 }
 
 export interface DataSelection {
   type: String;
-  selection: Event[];
+  selection: DataEvent[];
   closesWarning: String;
 }
 
@@ -54,4 +65,9 @@ export interface StateStore {
   postItGroups: PostIt[] | null;
   data: number[];
   selection: PostIt | null;
+}
+
+export interface StateProps {
+  state: StateStore;
+  setState: (state: StateStore) => void;
 }

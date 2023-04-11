@@ -17,14 +17,10 @@ import { theme } from "./theme";
 import MapMarker from "./MapMarker";
 import { ViewPort } from "./enums";
 
-function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
+function MainMap({ viewport, setViewport, mapRef, data }: ViewPort) {
   const divRef = useRef(null);
-  const TOKEN = MAPBOX_TOKEN;
-
   const { width, height } = useDimensions(divRef);
-
   const [selected, setSelected] = useState(null);
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,7 +40,7 @@ function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
   }, [viewport]);
 
   const { clusters, supercluster } = useSupercluster({
-    points: geoData,
+    points: data,
     bounds: bounds,
     zoom: viewport.zoom,
     options: { radius: 75 },
@@ -69,6 +65,26 @@ function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
       center: [longitude, latitude],
       duration: 2000,
       zoom: expansionZoom - 0.7,
+    });
+
+    setSelected(cluster.id);
+  };
+
+  const handleClick = (
+    event: MapboxEvent<MouseEvent>,
+    cluster: any,
+    longitude: number,
+    latitude: number
+  ) => {
+    if (selected == cluster.id) {
+      setSelected(null);
+      return;
+    }
+
+    mapRef.current?.flyTo({
+      center: [longitude, latitude],
+      duration: 2000,
+      zoom: viewport.zoom + 0.7,
     });
 
     setSelected(cluster.id);
@@ -130,6 +146,9 @@ function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
               key={`cluster-${cluster.properties.name}-${longitude}-${latitude}`}
               latitude={latitude}
               longitude={longitude}
+              onClick={(event) =>
+                handleClick(event, cluster, longitude, latitude)
+              }
             >
               <MapMarker
                 pointCount={pointCount}
