@@ -15,8 +15,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import useSupercluster from "use-supercluster";
 import { theme } from "./theme";
 import MapMarker from "./MapMarker";
+import { ViewPort } from "./enums";
 
-function MainMap() {
+function MainMap({viewport,setViewport,mapRef}:ViewPort ) {
   const divRef = useRef(null);
   const TOKEN = MAPBOX_TOKEN;
 
@@ -24,13 +25,6 @@ function MainMap() {
 
   const [selected, setSelected] = useState(null);
 
-  const mapRef = useRef<MapRef>(null);
-
-  const [viewport, setViewport] = useState({
-    latitude: 62.862626,
-    longitude: 15.186464,
-    zoom: 1,
-  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
