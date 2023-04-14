@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import data from "./twitterDataSample.json";
-import { DataEvent, StateStore, Warning } from "./enums";
+import { DataEvent, MapOption, StateStore, Warning } from "./enums";
 
 export const ids = data.map((item) => Number(item.id));
 
@@ -58,3 +58,21 @@ export const timeData = data.map((value) => {
     pred_off_topic: value["P (off-topic)"],
   };
 });
+
+export const mapOptions: MapOption[] = [
+  {
+    label: "Satellite",
+    value: "mapbox://styles/mapbox/satellite-v9",
+    bright: false,
+  },
+  { label: "Light", value: "mapbox://styles/mapbox/light-v11", bright: true },
+  { label: "Dark", value: "mapbox://styles/mapbox/dark-v11", bright: false },
+  {
+    label: "Standard",
+    value: "mapbox://styles/mapbox/streets-v12",
+    bright: true,
+  },
+  { label: "Temperature", value: "", bright: false },
+  { label: "Rainfall", value: "", bright: false },
+  { label: "Wind", value: "", bright: false },
+];

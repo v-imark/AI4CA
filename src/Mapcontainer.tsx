@@ -5,7 +5,7 @@ import MainMap from "./MainMap";
 
 //
 import Userfilters from "./Userfilters";
-import { SetStateAction, useMemo, useRef, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
 import { geoData } from "./processData";
 import { StateProps, StateStore } from "./enums";
@@ -19,6 +19,8 @@ function Mapcontainer(props: StateProps) {
     );
     return newData;
   }, [props.state.data]);
+
+  const [mapIsBright, setMapIsBright] = useState(false);
 
   const mapRef = useRef<MapRef>(null);
   const contextRef = useRef<MapRef>(null);
@@ -59,7 +61,7 @@ function Mapcontainer(props: StateProps) {
       sx={{
         height: "100%",
         width: "100%",
-        backgroundColor: "darkblue",
+        backgroundColor: "white",
         display: "flex",
         margin: 0,
         padding: 0,
@@ -81,10 +83,15 @@ function Mapcontainer(props: StateProps) {
             data={data}
             clusters={contextClusters.clusters}
             contextRef={contextRef}
+            mapIsBright={mapIsBright}
           />
         </Box>
         <Box sx={{ height: "60%", width: "100%" }}>
-          <Userfilters></Userfilters>
+          <Userfilters
+            mapRef={mapRef}
+            contextRef={contextRef}
+            setMapIsBright={setMapIsBright}
+          />
         </Box>
       </Box>
 
