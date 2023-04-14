@@ -1,9 +1,10 @@
 import { Box } from "@mui/system";
 import { theme } from "./theme";
-import { DataEvent, StateProps, StateStore } from "./enums";
+import { DataEvent, PostIt, StateProps, StateStore } from "./enums";
 import {
   Button,
   Card,
+  CardActionArea,
   CardActions,
   CardContent,
   CardHeader,
@@ -13,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Delete, { DeleteOutlined } from "@mui/icons-material";
+import Delete, { BorderColor, DeleteOutlined } from "@mui/icons-material";
 import SaveIcon from "@mui/icons-material/Save";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import { ReactElement, useEffect, useMemo, useState } from "react";
@@ -21,13 +22,16 @@ import { json } from "d3-fetch";
 import { basePostit } from "./PostitGroup";
 
 import { events } from "./processData";
+import { selection } from "d3";
 
 interface PostitProps extends StateProps {
-  events: number[];
+  events: PostIt;
   indexKey: number;
+  selected: boolean;
 }
 
 export interface PostitInfo {
+  postitName: String;
   selectedAmount: Number;
   startDate: Date;
   endDate: String;
@@ -36,7 +40,7 @@ export interface PostitInfo {
   avgTemp: number;
   avgWindSpeed: number;
   avgWeather: String;
-  daysSinceLastWarning: number;
+  //daysSinceLastWarning: number;
 
   nGreenSeverity: number;
   nYellowSeverity: number;
@@ -44,9 +48,12 @@ export interface PostitInfo {
 }
 
 function Postit(props: PostitProps): ReactElement {
+  const [postName, setPostName] = useState(props.events.type);
+
   const data = useMemo(() => {
+    setPostName(props.events.type);
     const newData = events.filter((item) =>
-      props.events.find((id) => item.id == id)
+      props.events.event_ids.find((id) => item.id == id)
     );
     return newData;
   }, [props.events]);
@@ -73,19 +80,38 @@ function Postit(props: PostitProps): ReactElement {
   }, []);
 */
   function RemoveFromGroup(removeIndex: number) {
-    console.log("Remove: " + removeIndex);
-  }
-  function AddToGroup() {
-    console.log("Added");
-    // TODO: Check that are values are valid
+    const idToRemove = props.state.postItGroups[removeIndex - 2].post_it_id;
+    console.log("Remove: " + removeIndex + " With id: " + idToRemove);
     props.setState(
       (prev: StateStore) =>
         ({
-          postItGroups: [...prev.postItGroups, basePostit],
+          postItGroups: prev.postItGroups.filter((postit) => {
+            console.log(postit.post_it_id);
+            return postit.post_it_id != idToRemove;
+          }),
           data: prev.data,
           selection: prev.selection,
         } as StateStore)
     );
+  }
+  function AddToGroup() {
+    console.log("Added");
+    // TODO: Check that are values are valid
+
+    props.setState((prev: StateStore) => {
+      const newPostit = {
+        type: postName,
+        post_it_id: new Date().getTime(),
+        event_ids: prev.selection?.event_ids,
+      };
+      console.log("The new id is:" + newPostit.post_it_id);
+      return {
+        postItGroups: [...prev.postItGroups, newPostit],
+        data: prev.data,
+        selection: prev.selection,
+      } as StateStore;
+    });
+    console.log(props.state.postItGroups);
   }
 
   function CardClick(actionType: number) {
@@ -123,30 +149,55 @@ function Postit(props: PostitProps): ReactElement {
     const avgLong = (longSum / longs.length).toFixed(4);
     const avgLat = (latSum / lats.length).toFixed(4);
 
-    const temp = Math.random() * 10;
+    const randTemp = Math.random() * 10;
     const windSpeed = (Math.random() + 1) * 2;
 
     const weathers = ["Sun", "Rain", "Snow", "Cloudy", "Frost", "Strom"];
     const randomWeather =
       weathers[Math.round(Math.random() * (weathers.length - 1))];
+    const nAmount = data.length;
+
+    const nameOfPostit = props.events.type + " Group";
     return {
-      selectedAmount: data.length,
+      postitName: nameOfPostit,
+      selectedAmount: nAmount,
       startDate: orderedDates[0],
       endDate: orderedDates.reverse()[0],
       avgLong: avgLong,
       avgLat: avgLat,
-      avgTemp: temp.toFixed(1),
+      avgTemp: randTemp.toFixed(1),
       avgWindSpeed: windSpeed.toFixed(2),
       avgWeather: randomWeather,
-      daysSinceLastWarning: 0,
+      //daysSinceLastWarning: 0,
       nGreenSeverity: greens.length,
       nYellowSeverity: yellows.length,
       nRedSeverity: reds.length,
     };
-  }, []);
+  }, [props.events]);
 
-  // Fetch this variable:
-  var currentPostitNumber = 0;
+  const customBorder = {
+    borderColor:
+      props.selected == true
+        ? "8px solid " + theme.palette.primary.main
+        : "8px solid white",
+  };
+
+  function SelectPostit() {
+    console.log("Bingo");
+    console.log(postName);
+    const Postit: PostIt = {
+      type: postName,
+      post_it_id: props.events.post_it_id,
+      event_ids: props.events.event_ids,
+    };
+    props.setState((prev: StateStore) => {
+      return {
+        postItGroups: prev.postItGroups,
+        data: prev.data,
+        selection: Postit,
+      } as StateStore;
+    });
+  }
 
   return (
     <Card
@@ -155,13 +206,13 @@ function Postit(props: PostitProps): ReactElement {
         minWidth: 300,
         height: "90%",
         margin: 1,
-        border: "8px solid #4C86A8",
+        border: customBorder.borderColor,
       }}
     >
       <CardHeader
         avatar={
           <Typography variant="h6" component="div">
-            #{currentPostitNumber + 1}
+            #{props.indexKey}
           </Typography>
         }
         action={
@@ -178,130 +229,135 @@ function Postit(props: PostitProps): ReactElement {
             fullWidth
             variant="standard"
             id="filled-hidden-label-small"
-            placeholder="Test Event Information"
+            value={postName}
+            onChange={(e) => {
+              setPostName(e.target.value);
+            }}
             size="small"
           />
         }
         subheader={"Selected Amount:" + postitInfo.selectedAmount}
       />
-      <CardContent>
-        <Typography variant="body2">
-          Avg Longitude: {postitInfo.avgLong}
-        </Typography>
-
-        <Typography variant="body2">
-          Avg Latitude: {postitInfo.avgLat}
-        </Typography>
-
-        <Typography variant="body2">
-          Avg Temperature: {postitInfo.avgTemp}
-        </Typography>
-
-        <Typography variant="body2">
-          Avg Wind Speed: {postitInfo.avgWindSpeed} m/s
-        </Typography>
-
-        <Typography variant="body2">
-          Group Start Date: {postitInfo.startDate.toLocaleDateString()}
-        </Typography>
-
-        <Typography variant="body2">
-          Group End Date: {postitInfo.endDate.toLocaleDateString()}
-        </Typography>
-
-        <Typography variant="body2">
-          Most Occuring Weather: {postitInfo.avgWeather}
-        </Typography>
-
-        <Typography variant="body2">
-          Days Since Last Warning Issued: {postitInfo.daysSinceLastWarning}
-        </Typography>
-      </CardContent>
-
-      <Grid container spacing={0} sx={{ padding: 1 }}>
-        <Grid
-          item
-          xs={12 * (postitInfo.nGreenSeverity / postitInfo.selectedAmount)}
-        >
-          <LinearProgress
-            variant="determinate"
-            value={100}
-            color="success"
-            sx={{
-              height: 20,
-              borderBottomLeftRadius: 5,
-              borderTopLeftRadius: 5,
-            }}
-          />
-          <Typography
-            variant="body2"
-            align="center"
-            position={"relative"}
-            marginTop={-2.5}
-            zIndex={1}
-            sx={{ fontWeight: "bold" }}
-          >
-            {Math.round(
-              (postitInfo.nGreenSeverity / postitInfo.selectedAmount) * 100
-            ) + "%"}
+      <CardActionArea onClick={SelectPostit}>
+        <CardContent>
+          <Typography variant="body2">
+            Avg Longitude: {postitInfo.avgLong}
           </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={12 * (postitInfo.nYellowSeverity / postitInfo.selectedAmount)}
-        >
-          <LinearProgress
-            variant="determinate"
-            value={100}
-            color="warning"
-            sx={{ height: 20 }}
-          />
-          <Typography
-            variant="body2"
-            align="center"
-            position={"relative"}
-            marginTop={-2.5}
-            zIndex={1}
-            sx={{ fontWeight: "bold" }}
-          >
-            {Math.round(
-              (postitInfo.nYellowSeverity / postitInfo.selectedAmount) * 100
-            ) + "%"}
+
+          <Typography variant="body2">
+            Avg Latitude: {postitInfo.avgLat}
           </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={12 * (postitInfo.nRedSeverity / postitInfo.selectedAmount)}
-        >
-          <LinearProgress
-            variant="determinate"
-            value={100}
-            color="error"
-            sx={{
-              height: 20,
-              borderBottomRightRadius: 5,
-              borderTopRightRadius: 5,
-            }}
-          />
-          <Typography
-            variant="body2"
-            align="center"
-            position={"relative"}
-            marginTop={-2.5}
-            zIndex={1}
-            sx={{ fontWeight: "bold" }}
+
+          <Typography variant="body2">
+            Avg Temperature: {postitInfo.avgTemp}
+          </Typography>
+
+          <Typography variant="body2">
+            Avg Wind Speed: {postitInfo.avgWindSpeed} m/s
+          </Typography>
+
+          <Typography variant="body2">
+            Group Start Date: {postitInfo.startDate.toLocaleDateString()}
+          </Typography>
+
+          <Typography variant="body2">
+            Group End Date: {postitInfo.endDate.toLocaleDateString()}
+          </Typography>
+
+          <Typography variant="body2">
+            Most Occuring Weather: {postitInfo.avgWeather}
+          </Typography>
+
+          {/*<Typography variant="body2">
+            Days Since Last Warning Issued: {postitInfo.daysSinceLastWarning}
+          </Typography>*/}
+        </CardContent>
+
+        <Grid container spacing={0} sx={{ padding: 1 }}>
+          <Grid
+            item
+            xs={12 * (postitInfo.nGreenSeverity / postitInfo.selectedAmount)}
           >
-            {100 -
-              Math.round(
-                (postitInfo.nYellowSeverity / postitInfo.selectedAmount) * 100
-              ) -
-              Math.round(
+            <LinearProgress
+              variant="determinate"
+              value={100}
+              color="success"
+              sx={{
+                height: 20,
+                borderBottomLeftRadius: 5,
+                borderTopLeftRadius: 5,
+              }}
+            />
+            {/*<Typography
+              variant="body2"
+              align="center"
+              position={"relative"}
+              marginTop={-2.5}
+              zIndex={1}
+              sx={{ fontWeight: "bold" }}
+            >
+              {Math.round(
                 (postitInfo.nGreenSeverity / postitInfo.selectedAmount) * 100
-              ) +
-              "%"}
-          </Typography>
+              ) + "%"}
+            </Typography>*/}
+          </Grid>
+          <Grid
+            item
+            xs={12 * (postitInfo.nYellowSeverity / postitInfo.selectedAmount)}
+          >
+            <LinearProgress
+              variant="determinate"
+              value={100}
+              color="warning"
+              sx={{ height: 20 }}
+            />
+            {/*<Typography
+              variant="body2"
+              align="center"
+              position={"relative"}
+              marginTop={-2.5}
+              zIndex={1}
+              sx={{ fontWeight: "bold" }}
+            >
+              {Math.round(
+                (postitInfo.nYellowSeverity / postitInfo.selectedAmount) * 100
+              ) + "%"}
+              </Typography>*/}
+          </Grid>
+          <Grid
+            item
+            xs={12 * (postitInfo.nRedSeverity / postitInfo.selectedAmount)}
+          >
+            <LinearProgress
+              variant="determinate"
+              value={100}
+              color="error"
+              sx={{
+                height: 20,
+                borderBottomRightRadius: 5,
+                borderTopRightRadius: 5,
+              }}
+            />
+            {/*<Typography
+              variant="body2"
+              align="center"
+              position={"relative"}
+              marginTop={-2.5}
+              zIndex={1}
+              sx={{ fontWeight: "bold" }}
+            >
+              {100 -
+                Math.round(
+                  (postitInfo.nYellowSeverity / postitInfo.selectedAmount) * 100
+                ) -
+                Math.round(
+                  (postitInfo.nGreenSeverity / postitInfo.selectedAmount) * 100
+                ) +
+                "%"}
+            </Typography>*/}
+          </Grid>
         </Grid>
-      </Grid>
+      </CardActionArea>
     </Card>
   );
 }

@@ -2,16 +2,20 @@ import { Box, List, ListItem, Stack } from "@mui/material";
 import Postit from "./Postit";
 import { events, ids } from "./processData";
 import { DataEvent, PostIt, StateProps } from "./enums";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const basePostit: PostIt = {
-  type: "Base",
+  type: "Active",
   post_it_id: 1,
   event_ids: ids,
 };
 
 function PostitGroup(props: StateProps) {
-  //const SavedPostits: Postit = [];
+  useEffect(() => {
+    console.log(props.state.selection);
+    if (props.state.selection == undefined) console.log("frick");
+  }, [props.state.selection]);
+
   return (
     <Box
       sx={{
@@ -23,10 +27,11 @@ function PostitGroup(props: StateProps) {
       }}
     >
       <Postit
-        events={basePostit.event_ids}
+        events={props.state.selection ? props.state.selection : basePostit}
         indexKey={1}
         state={props.state}
         setState={props.setState}
+        selected={true}
       />
       ;
       {(props.state.postItGroups != undefined
@@ -35,11 +40,12 @@ function PostitGroup(props: StateProps) {
       ).map((p, index) => {
         return (
           <Postit
-            events={p.event_ids}
-            indexKey={index + 1}
+            events={p}
+            indexKey={index + 2}
             key={index}
             state={props.state}
             setState={props.setState}
+            selected={false}
           />
         );
       })}

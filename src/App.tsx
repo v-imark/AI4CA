@@ -6,7 +6,7 @@ import { Container } from "@mui/system";
 
 import Timeline from "./Timeline";
 
-import PostitGroup from "./PostitGroup";
+import PostitGroup, { basePostit } from "./PostitGroup";
 import InfoPanel from "./InfoPanel";
 
 //
@@ -35,7 +35,7 @@ function App() {
   const [state, setState] = useState<StateStore>({
     postItGroups: [],
     data: ids,
-    selection: undefined,
+    selection: basePostit,
   });
 
   useEffect(() => {
