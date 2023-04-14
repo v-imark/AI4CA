@@ -33,9 +33,9 @@ function App() {
   ]);
 
   const [state, setState] = useState<StateStore>({
-    postItGroups: null,
+    postItGroups: [],
     data: ids,
-    selection: null,
+    selection: undefined,
   });
 
   useEffect(() => {
@@ -103,7 +103,7 @@ function App() {
             </Grid>
 
             <Grid item xs={5} sx={{ width: "100%" }} paddingLeft={0}>
-              <PostitGroup></PostitGroup>
+              <PostitGroup state={state} setState={setState}></PostitGroup>
             </Grid>
           </Grid>
         </Grid>

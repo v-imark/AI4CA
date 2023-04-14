@@ -62,12 +62,12 @@ export interface PostIt {
 }
 
 export interface StateStore {
-  postItGroups: PostIt[] | null;
+  postItGroups: PostIt[];
   data: number[];
-  selection: PostIt | null;
+  selection: PostIt | undefined;
 }
 
 export interface StateProps {
   state: StateStore;
-  setState: (state: StateStore) => void;
+  setState: React.Dispatch<React.SetStateAction<StateStore>>
 }

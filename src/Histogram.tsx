@@ -5,23 +5,13 @@ import { Warning } from "./enums";
 import { theme } from "./theme";
 import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
+import { Warnings } from "./processData";
 
 type HistogramProps = {
   data: any[];
   dateTimeExtent: [Date, Date];
   binSize: 0 | number;
 };
-
-const Warnings: Warning[] = [
-  {
-    text: "Kraftigt regn i Norrköping, risk för översvämning",
-    time: new Date(2021, 7, 17),
-  },
-  {
-    text: "Kraftigt regn i Gävle, risk för översvämning",
-    time: new Date(2023, 0, 10),
-  },
-];
 
 function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
   const ref = useRef<HTMLInputElement>(null);
