@@ -98,7 +98,7 @@ function App() {
             sx={{ height: "100%", width: "100%" }}
           >
             <Grid item xs={7} sx={{ width: "100%" }} paddingLeft={0}>
-              <InfoPanel></InfoPanel>
+              <InfoPanel state={state} setState={setState}></InfoPanel>
             </Grid>
 
             <Grid item xs={5} sx={{ width: "100%" }} paddingLeft={0}>
