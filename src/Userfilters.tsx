@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 
 //Icons
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,6 +25,9 @@ import FilterIcon from "@mui/icons-material/Filter";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import { every } from "d3";
+import { MapOption } from "./enums";
+import { mapOptions } from "./processData";
+import { MapRef } from "react-map-gl";
 
 const allFilters = [
   "Time",
@@ -35,30 +38,43 @@ const allFilters = [
   "Wind Speed",
 ];
 
-function Userfilters() {
+interface UserfiltersProps {
+  mapRef: RefObject<MapRef>;
+  contextRef: RefObject<MapRef>;
+  setMapIsBright: React.Dispatch<SetStateAction<boolean>>;
+}
+
+function Userfilters({ mapRef, contextRef, setMapIsBright }: UserfiltersProps) {
   const [editMode, setEditMode] = useState<boolean>(false); //When true, view checkboxes so user can select filters in normal view
-  const [userFilters, setUserFilters] = useState<string[]>([
-    "Time",
-    "Location",
-    "Severity",
+  const [userFilters, setUserFilters] = useState<MapOption[]>([
+    mapOptions[0],
+    mapOptions[1],
+    mapOptions[2],
   ]);
 
+  const [style, setStyle] = useState(mapOptions[2].value);
+
   //User adds a filter to the list
-  const handleChange = (event: string) => {
-    if (userFilters.includes(event)) {
-      setUserFilters(userFilters.filter((filter) => filter !== event));
+  const handleChange = (option: MapOption) => {
+    if (userFilters.includes(option)) {
+      setUserFilters(userFilters.filter((filter) => filter !== option));
     } else {
-      setUserFilters([...userFilters, event]);
+      setUserFilters([...userFilters, option]);
     }
-    //console.log(event);
-    //console.log(userFilters);
   };
 
-  useEffect(() => {
-    //console.log("userFilters changed");
-  }, [userFilters]);
+  const isChecked = (option: MapOption) => {
+    return style == option.value;
+  };
 
-  useEffect(() => {}, [editMode]);
+  const handleSwitch = (option: MapOption) => {
+    setStyle(option.value);
+    mapRef.current?.getMap().setStyle(option.value as string);
+    contextRef.current?.getMap().setStyle(option.value as string);
+
+    if (option.bright) setMapIsBright(true);
+    else setMapIsBright(false);
+  };
 
   return (
     <Box sx={{ backgroundColor: "white", height: "100%" }}>
@@ -80,7 +96,7 @@ function Userfilters() {
                   <FilterIcon />
                 </ListItemIcon>
                 <Grow in={true}>
-                  <Typography variant="h6">Filters</Typography>
+                  <Typography variant="h6">Options</Typography>
                 </Grow>
               </>
             )}
@@ -133,9 +149,9 @@ function Userfilters() {
             disablePadding
           >
             {editMode
-              ? allFilters.map((filter) => (
+              ? mapOptions.map((filter, i) => (
                   <ListItem
-                    key={filter}
+                    key={i}
                     secondaryAction={
                       <Checkbox
                         checked={userFilters.includes(filter)}
@@ -143,15 +159,20 @@ function Userfilters() {
                       ></Checkbox>
                     }
                   >
-                    <ListItemText primary={filter} />
+                    <ListItemText primary={filter.label} />
                   </ListItem>
                 ))
-              : userFilters.map((filter) => (
+              : userFilters.map((filter, i) => (
                   <ListItem
-                    key={filter}
-                    secondaryAction={<Switch checked={true}></Switch>}
+                    key={i}
+                    secondaryAction={
+                      <Switch
+                        checked={isChecked(filter)}
+                        onChange={() => handleSwitch(filter)}
+                      ></Switch>
+                    }
                   >
-                    <ListItemText primary={filter} />
+                    <ListItemText primary={filter.label} />
                   </ListItem>
                 ))}
           </List>

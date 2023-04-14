@@ -72,7 +72,7 @@ function MapMarker({
         cx="50"
         cy="50"
         r={hover ? (size + 10) / 6 : size / 6}
-        fill={theme.palette.primary.main}
+        fill={selected ? theme.palette.primary.main : theme.palette.error.main}
         stroke="#fff"
         strokeWidth={3}
       ></circle>

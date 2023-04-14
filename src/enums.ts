@@ -74,3 +74,9 @@ export interface StateProps {
   state: StateStore;
   setState: React.Dispatch<React.SetStateAction<StateStore>>;
 }
+
+export interface MapOption {
+  label: String;
+  value: String;
+  bright: boolean;
+}
