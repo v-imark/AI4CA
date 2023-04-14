@@ -31,8 +31,13 @@ import { contextclusterLayer, contextunclusteredPointLayer } from "./layers";
 import { borderColor } from "@mui/system";
 import { ViewPort } from "./enums";
 import MapMarker from "./MapMarker";
-import { geoData } from "./processData";
+import { geoData, mapOptions } from "./processData";
 import useSupercluster from "use-supercluster";
+import { ContentCutSharp } from "@mui/icons-material";
+
+interface ContextMapProps extends ViewPort {
+  mapIsBright: boolean;
+}
 
 function ContextMap({
   viewport,
@@ -40,7 +45,8 @@ function ContextMap({
   mapRef,
   clusters,
   contextRef,
-}: ViewPort) {
+  mapIsBright,
+}: ContextMapProps) {
   const divRef = useRef(null);
 
   const { width, height } = useDimensions(divRef);
@@ -86,7 +92,7 @@ function ContextMap({
           zoom: 2.4,
         }}
         mapStyle="mapbox://styles/mapbox/dark-v9"
-        style={{ width: width, height: height }}
+        style={{ width: "100%", height: "100%" }}
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={false}
         scrollZoom={false}
@@ -109,7 +115,9 @@ function ContextMap({
               width: (widthAndHeight.width * 6) / Math.pow(2, viewport.zoom),
               height: (widthAndHeight.height * 6) / Math.pow(2, viewport.zoom),
               backgroundColor: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.5)",
+              border: mapIsBright
+                ? "1px solid rgba(0,0,0,0.5)"
+                : "1px solid rgba(255,255,255,0.5)",
             }}
           ></div>
         </Marker>

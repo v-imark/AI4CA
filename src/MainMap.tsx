@@ -142,7 +142,7 @@ function MainMap({
           })
         }
         mapStyle="mapbox://styles/mapbox/dark-v9"
-        style={{ width: width, height: height }}
+        style={{ width: "100%", height: "100%" }}
         mapboxAccessToken={MAPBOX_TOKEN}
         attributionControl={false}
         interactiveLayerIds={["clusters"]}
@@ -192,6 +192,7 @@ function MainMap({
                 pointCount={pointCount}
                 size={size}
                 isCluster={false}
+                selected={selected == cluster.id}
               />
             </Marker>
           );
