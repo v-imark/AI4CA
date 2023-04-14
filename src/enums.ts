@@ -72,5 +72,5 @@ export interface StateStore {
 
 export interface StateProps {
   state: StateStore;
-  setState: (state: StateStore) => void;
+  setState: React.Dispatch<React.SetStateAction<StateStore>>;
 }

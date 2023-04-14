@@ -5,20 +5,20 @@ import MainMap from "./MainMap";
 
 //
 import Userfilters from "./Userfilters";
-import { useMemo, useRef, useState } from "react";
+import { SetStateAction, useMemo, useRef, useState } from "react";
 import { MapRef } from "react-map-gl";
 import { geoData } from "./processData";
-import { StateStore } from "./enums";
+import { StateProps, StateStore } from "./enums";
 import useSupercluster from "use-supercluster";
 import { BBox } from "geojson";
 
-function Mapcontainer(props: StateStore) {
+function Mapcontainer(props: StateProps) {
   const data = useMemo(() => {
     const newData = geoData.filter((item) =>
-      props.data.find((id) => item.id == id)
+      props.state.data.find((id) => item.id == id)
     );
     return newData;
-  }, [props.data]);
+  }, [props.state.data]);
 
   const mapRef = useRef<MapRef>(null);
   const contextRef = useRef<MapRef>(null);
@@ -96,6 +96,8 @@ function Mapcontainer(props: StateStore) {
           data={data}
           clusters={clusters}
           supercluster={supercluster}
+          state={props.state}
+          setState={props.setState}
         />
       </Box>
     </Card>

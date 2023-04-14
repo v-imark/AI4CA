@@ -15,16 +15,20 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import useSupercluster from "use-supercluster";
 import { theme } from "./theme";
 import MapMarker from "./MapMarker";
-import { ViewPort } from "./enums";
+import { PostIt, StateProps, StateStore, ViewPort } from "./enums";
+import PostitGroup from "./PostitGroup";
+
+interface MainMapProps extends ViewPort, StateProps {}
 
 function MainMap({
   viewport,
   setViewport,
   mapRef,
-  data,
   clusters,
   supercluster,
-}: ViewPort) {
+  state,
+  setState,
+}: MainMapProps) {
   const divRef = useRef(null);
   const { width, height } = useDimensions(divRef);
   const [selected, setSelected] = useState(null);
@@ -40,15 +44,10 @@ function MainMap({
     return () => clearTimeout(timer);
   }, []);
 
-  const bounds = useMemo(() => {
-    return mapRef.current
-      ? (mapRef.current.getMap().getBounds().toArray().flat() as BBox)
-      : undefined;
-  }, [viewport]);
-
   const handleClusterClick = (
     event: MapboxEvent<MouseEvent>,
     cluster: any,
+    supercluster: any,
     longitude: number,
     latitude: number
   ) => {
@@ -66,6 +65,23 @@ function MainMap({
       duration: 2000,
       zoom: expansionZoom - 0.7,
     });
+
+    const newSelectedPostIt: PostIt = {
+      type: "Spatial",
+      post_it_id: cluster.id,
+      event_ids: supercluster
+        .getLeaves(cluster.id, Infinity)
+        .map((item: any) => item.id as number),
+    };
+
+    setState(
+      (prev: StateStore) =>
+        ({
+          postItGroups: prev.postItGroups,
+          data: prev.data,
+          selection: newSelectedPostIt,
+        } as StateStore)
+    );
 
     setSelected(cluster.id);
   };
@@ -86,6 +102,22 @@ function MainMap({
       duration: 2000,
       zoom: viewport.zoom + 0.7,
     });
+
+    console.log(cluster);
+    const newSelectedPostIt: PostIt = {
+      type: "Single Event",
+      post_it_id: cluster.id,
+      event_ids: [cluster.id],
+    };
+
+    setState(
+      (prev: StateStore) =>
+        ({
+          postItGroups: prev.postItGroups,
+          data: prev.data,
+          selection: newSelectedPostIt,
+        } as StateStore)
+    );
 
     setSelected(cluster.id);
   };
@@ -128,7 +160,13 @@ function MainMap({
                 latitude={latitude}
                 longitude={longitude}
                 onClick={(event) =>
-                  handleClusterClick(event, cluster, longitude, latitude)
+                  handleClusterClick(
+                    event,
+                    cluster,
+                    supercluster,
+                    longitude,
+                    latitude
+                  )
                 }
               >
                 <MapMarker

@@ -61,8 +61,8 @@ function Userfilters() {
   useEffect(() => {}, [editMode]);
 
   return (
-    <Box sx={{ backgroundColor: "white", height: "100%", maxHeight: "100%" }}>
-      <List sx={{ position: "relative" }} disablePadding>
+    <Box sx={{ backgroundColor: "white", height: "100%" }}>
+      <List sx={{ position: "relative", maxHeight: "100%" }} disablePadding>
         <ListItem sx={{ display: "flex" }}>
           <ListItemButton disableTouchRipple={true}>
             {editMode ? (
