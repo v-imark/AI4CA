@@ -19,17 +19,6 @@ type HistogramProps = {
   setState: React.Dispatch<React.SetStateAction<StateStore>>;
 };
 
-const Warnings: Warning[] = [
-  {
-    text: "Kraftigt regn i Norrköping, risk för översvämning",
-    time: new Date(2021, 7, 17),
-  },
-  {
-    text: "Kraftigt regn i Gävle, risk för översvämning",
-    time: new Date(2023, 0, 10),
-  },
-];
-
 function Histogram({
   data,
   dateTimeExtent,
