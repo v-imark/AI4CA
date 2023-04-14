@@ -1,5 +1,5 @@
 import { MapRef } from "react-map-gl";
-
+import { BBox } from "geojson";
 export interface DataEvent {
   id: number;
   tweet_id: number;
@@ -42,6 +42,9 @@ export interface ViewPort {
     };
     properties: {};
   }[];
+  clusters: any[];
+  supercluster?: any;
+  contextRef?: React.RefObject<MapRef>;
 }
 
 export interface DataSelection {
@@ -69,5 +72,5 @@ export interface StateStore {
 
 export interface StateProps {
   state: StateStore;
-  setState: React.Dispatch<React.SetStateAction<StateStore>>
+  setState: React.Dispatch<React.SetStateAction<StateStore>>;
 }

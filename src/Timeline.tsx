@@ -18,9 +18,9 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Histogram from "./Histogram";
 import { timeData } from "./processData";
-import { StateStore } from "./enums";
+import { StateProps, StateStore } from "./enums";
 
-interface TimelineProps extends StateStore {
+interface TimelineProps extends StateProps {
   dateRange: [Date, Date];
   setDateRange: React.Dispatch<React.SetStateAction<[Date, Date]>>;
 }
@@ -44,10 +44,10 @@ function Timeline(props: TimelineProps) {
 
   const data = useMemo(() => {
     const newData = timeData.filter((item) =>
-      props.data.find((id) => item.id == id)
+      props.state.data.find((id) => item.id == id)
     );
     return newData;
-  }, [props.dateRange, props.data]);
+  }, [props.dateRange, props.state.data]);
 
   function ValueLabelComponent(props: SliderValueLabelProps) {
     const { children, value } = props;
@@ -84,12 +84,12 @@ function Timeline(props: TimelineProps) {
             <Box width={"20%"} paddingTop={1}>
               <Slider
                 value={binSize}
-                min={1}
+                min={0.5}
                 size="small"
                 aria-label=""
                 max={5}
                 sx={{ alignSelf: "center" }}
-                step={1}
+                step={0.5}
                 slots={{ valueLabel: ValueLabelComponent }}
                 valueLabelDisplay="auto"
                 onChange={(event, value) => setBinSize(value as number)}
@@ -146,6 +146,7 @@ function Timeline(props: TimelineProps) {
             data={data}
             dateTimeExtent={props.dateRange}
             binSize={binSize}
+            setState={props.setState}
           />
         </Grid>
       </Grid>

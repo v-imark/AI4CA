@@ -6,9 +6,16 @@ type MapMarkerProps = {
   size: number;
   isCluster: Boolean;
   selected?: Boolean;
+  isContext?: Boolean;
 };
 
-function MapMarker({ pointCount, size, isCluster, selected }: MapMarkerProps) {
+function MapMarker({
+  pointCount,
+  size,
+  isCluster,
+  selected,
+  isContext,
+}: MapMarkerProps) {
   const [hover, setHover] = useState(false);
 
   if (isCluster) {
@@ -16,10 +23,14 @@ function MapMarker({ pointCount, size, isCluster, selected }: MapMarkerProps) {
       <svg
         height={size}
         viewBox="0 0 100 100"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        pointerEvents="all"
-        cursor="pointer"
+        onMouseEnter={() => {
+          isContext ? undefined : setHover(true);
+        }}
+        onMouseLeave={() => {
+          isContext ? undefined : setHover(false);
+        }}
+        pointerEvents={isContext ? "none" : "all"}
+        cursor={isContext ? undefined : "pointer"}
       >
         <circle
           cx="50"
@@ -48,10 +59,14 @@ function MapMarker({ pointCount, size, isCluster, selected }: MapMarkerProps) {
     <svg
       height={size}
       viewBox="0 0 100 100"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      cursor="pointer"
-      pointerEvents="all"
+      onMouseEnter={() => {
+        isContext ? undefined : setHover(true);
+      }}
+      onMouseLeave={() => {
+        isContext ? undefined : setHover(false);
+      }}
+      cursor={isContext ? undefined : "pointer"}
+      pointerEvents={isContext ? "none" : "all"}
     >
       <circle
         cx="50"

@@ -1,19 +1,41 @@
 import { Card, CardContent, CardHeader, Tooltip } from "@mui/material";
 import * as d3 from "d3";
 import { RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Warning } from "./enums";
+import { PostIt, StateStore, Warning } from "./enums";
 import { theme } from "./theme";
 import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
 import { Warnings } from "./processData";
 
 type HistogramProps = {
-  data: any[];
+  data: {
+    id: number;
+    created_at: Date;
+    pred_on_topic: number;
+    pred_off_topic: number;
+  }[];
   dateTimeExtent: [Date, Date];
   binSize: 0 | number;
+  setState: React.Dispatch<React.SetStateAction<StateStore>>;
 };
 
-function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
+const Warnings: Warning[] = [
+  {
+    text: "Kraftigt regn i Norrköping, risk för översvämning",
+    time: new Date(2021, 7, 17),
+  },
+  {
+    text: "Kraftigt regn i Gävle, risk för översvämning",
+    time: new Date(2023, 0, 10),
+  },
+];
+
+function Histogram({
+  data,
+  dateTimeExtent,
+  binSize,
+  setState,
+}: HistogramProps) {
   const ref = useRef<HTMLInputElement>(null);
   const graphRef = useRef<SVGSVGElement>(null);
   const { width, height } = useDimensions(ref);
@@ -21,14 +43,43 @@ function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
   const [selectedBucket, setSelectedBucket] = useState<number | null>(null);
   const [hoveredWarning, setHoveredWarning] = useState<number | null>(null);
 
+  const handleBucketClick = (
+    bucket: d3.Bin<
+      {
+        id: number;
+        created_at: Date;
+        pred_on_topic: number;
+        pred_off_topic: number;
+      },
+      Date
+    >,
+    i: number
+  ) => {
+    const newSelectedPostIt: PostIt = {
+      type: "Temporal",
+      post_it_id: i,
+      event_ids: bucket.map((item) => item.id),
+    };
+
+    setState(
+      (prev: StateStore) =>
+        ({
+          postItGroups: prev.postItGroups,
+          data: prev.data,
+          selection: newSelectedPostIt,
+        } as StateStore)
+    );
+    setSelectedBucket((prev) => (prev == i ? null : i));
+  };
+
   const BUCKET_PADDING = 4;
-  const MARGIN = 10;
+
   const parseTime = d3.timeParse("%Y-%m-%d");
 
   const bins = d3.timeHour.range(
-    d3.timeHour.offset(dateTimeExtent[0], -24),
-    d3.timeHour.offset(dateTimeExtent[1], 24),
-    binSize * 12
+    d3.timeHour.offset(dateTimeExtent[0]),
+    d3.timeHour.offset(dateTimeExtent[1]),
+    binSize * 24
   );
 
   const xScale = useMemo(() => {
@@ -40,11 +91,19 @@ function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
 
   const buckets = useMemo(() => {
     const bucketGenerator = d3
-      .bin<Date, Date>()
-      .value((d) => d)
+      .bin<
+        {
+          id: number;
+          created_at: Date;
+          pred_on_topic: number;
+          pred_off_topic: number;
+        },
+        Date
+      >()
+      .value((d) => d.created_at)
       .domain(dateTimeExtent)
       .thresholds(bins);
-    return bucketGenerator(data.map((item) => item.created_at));
+    return bucketGenerator(data);
   }, [xScale, bins]);
 
   const yScale = useMemo(() => {
@@ -66,22 +125,26 @@ function Histogram({ data, dateTimeExtent, binSize }: HistogramProps) {
     const x = xScale(bucket.x0) + BUCKET_PADDING / 2;
     const y = yScale(bucket.length);
 
+    const tooltipText = `Events:  ${bucket.length}`;
+
     return (
-      <rect
-        key={i}
-        fill={
-          i == selectedBucket
-            ? theme.palette.primary.main
-            : theme.palette.success.main
-        }
-        stroke={theme.palette.success.main}
-        x={x}
-        width={bucketWidth}
-        y={y}
-        height={bucketHeight}
-        onClick={() => setSelectedBucket((prev) => (prev == i ? null : i))}
-        cursor="pointer"
-      ></rect>
+      <Tooltip title={tooltipText} placement="top">
+        <rect
+          key={i}
+          fill={
+            i == selectedBucket
+              ? theme.palette.primary.main
+              : theme.palette.success.main
+          }
+          stroke={theme.palette.success.main}
+          x={x}
+          width={bucketWidth}
+          y={y}
+          height={bucketHeight}
+          onClick={() => handleBucketClick(bucket, i)}
+          cursor="pointer"
+        ></rect>
+      </Tooltip>
     );
   });
 
