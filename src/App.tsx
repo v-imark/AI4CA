@@ -39,6 +39,10 @@ function App() {
   });
 
   useEffect(() => {
+    console.log(state);
+  }, [state.selection]);
+
+  useEffect(() => {
     const newIds: number[] = [];
     for (const item of timeData) {
       if (item?.created_at >= dateRange[0] && item.created_at <= dateRange[1]) {
@@ -72,18 +76,13 @@ function App() {
             sx={{ height: "100%", width: "100%" }}
           >
             <Grid item xs={8}>
-              <Mapcontainer
-                data={state.data}
-                selection={state.selection}
-                postItGroups={state.postItGroups}
-              ></Mapcontainer>
+              <Mapcontainer state={state} setState={setState} />
             </Grid>
 
             <Grid item xs={4}>
               <Timeline
-                data={state.data}
-                selection={state.selection}
-                postItGroups={state.postItGroups}
+                state={state}
+                setState={setState}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
               />
