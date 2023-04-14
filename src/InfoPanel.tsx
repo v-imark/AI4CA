@@ -1,6 +1,8 @@
 import {
+  Avatar,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
@@ -8,12 +10,44 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemAvatar,
   ListItemButton,
   ListItemText,
   Typography,
 } from "@mui/material";
 
-function InfoPanel() {
+import TweetDisplay from "./TweetDisplay";
+
+import { events } from "./processData"; //Import 1 tweet from the data for testing, TODO remove and use props
+import { useEffect, useMemo, useState } from "react";
+import { DataEvent, StateStore, StateProps } from "./enums";
+import { CheckBox, Person } from "@mui/icons-material";
+
+function InfoPanel(props: StateProps) {
+  // Demo data
+  const [tweetsInEvent, setTweetsInEvent] = useState<DataEvent[]>([]); //All tweets from one post it
+  const [selectedTweet, setSelectedTweet] = useState<DataEvent>(undefined!); //A single tweet to display
+  const [postItTitle, setPostItTitle] = useState<String>("");
+
+  useEffect(() => {
+    setSelectedTweet(undefined!);
+    //change to title of selected post-it
+    const newTitle = props.state.selection?.type
+      ? props.state.selection.type
+      : "";
+    setPostItTitle(newTitle);
+
+    //Set tweets to display
+    const postIt_ids = props.state.selection?.event_ids
+      ? props.state.selection.event_ids
+      : [];
+
+    const newData = events.filter((item) =>
+      postIt_ids.find((id) => item.id == id)
+    );
+    setTweetsInEvent(newData);
+  }, [props.state.selection]);
+
   return (
     <Grid
       container
@@ -22,10 +56,7 @@ function InfoPanel() {
     >
       <Grid item xs={6} sx={{ height: "100%", width: "100%", margin: 0 }}>
         <Card>
-          <CardHeader
-            title="Shrimp and Chorizo Paella"
-            subheader="September 14, 2016"
-          />
+          <CardHeader title={postItTitle} subheader="September 14, 2016" />
           <CardContent>
             <List
               sx={{
@@ -37,19 +68,38 @@ function InfoPanel() {
               }}
             >
               <Divider />
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => {
-                const labelId = `checkbox-list-secondary-label-${index}`;
-                return (
-                  <ListItem key={index}>
-                    <ListItemButton>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${index + 1}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
+              {tweetsInEvent.map((tweet) => (
+                <ListItem>
+                  <ListItemButton
+                    onClick={() => {
+                      tweet === selectedTweet
+                        ? setSelectedTweet(undefined!)
+                        : setSelectedTweet(tweet);
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: "lightSkyBlue" }}>
+                        <Person></Person>
+                      </Avatar>
+                    </ListItemAvatar>
+
+                    {
+                      //TODO add improved "selected" behaviour
+                      tweet === selectedTweet ? <CheckBox></CheckBox> : <></>
+                    }
+                    <ListItemText>
+                      <Typography variant="body2">
+                        {
+                          //Split after 20 characters
+                          tweet.text.length > 40
+                            ? tweet.text.substring(0, 40) + "..."
+                            : tweet.text
+                        }
+                      </Typography>
+                    </ListItemText>
+                  </ListItemButton>
+                </ListItem>
+              ))}
               <Divider />
             </List>
           </CardContent>
@@ -57,25 +107,7 @@ function InfoPanel() {
       </Grid>
 
       <Grid item xs={6} margin={0}>
-        <Card sx={{ height: "100%", width: "100%" }}>
-          <CardActionArea>
-            <CardMedia
-              component="img"
-              height="140"
-              image="/src/BlueEyesArt.jpg"
-              alt="Blue eyes"
-            />
-          </CardActionArea>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              BlueEyes
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over
-              6,000 species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-        </Card>
+        <TweetDisplay {...selectedTweet}></TweetDisplay>
       </Grid>
     </Grid>
   );
