@@ -17,7 +17,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Histogram from "./Histogram";
-import { timeData, useBearStore } from "./processData";
+import { timeData } from "./processData";
 import { StateProps, StateStore } from "./enums";
 
 interface TimelineProps extends StateProps {

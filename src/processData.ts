@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import data from "./twitterDataSample.json";
-import { DataEvent, StateStore } from "./enums";
+import { DataEvent, StateStore, Warning } from "./enums";
 
 export const ids = data.map((item) => Number(item.id));
 
@@ -27,6 +27,17 @@ export const events: DataEvent[] = data.map((item) => {
   } as DataEvent;
 });
 
+export const Warnings: Warning[] = [
+  {
+    text: "Kraftigt regn i Norrköping, risk för översvämning",
+    time: new Date(2021, 7, 17),
+  },
+  {
+    text: "Kraftigt regn i Gävle, risk för översvämning",
+    time: new Date(2023, 0, 10),
+  },
+];
+
 export const geoData = data.map((value) => {
   return {
     type: "Feature",
@@ -47,10 +58,3 @@ export const timeData = data.map((value) => {
     pred_off_topic: value["P (off-topic)"],
   };
 });
-
-export const useBearStore = create<StateStore>((set) => ({
-  postItGroups: null,
-  data: ids,
-  filter: ids,
-  selection: null,
-}));

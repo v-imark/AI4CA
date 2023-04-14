@@ -5,6 +5,7 @@ import { PostIt, StateStore, Warning } from "./enums";
 import { theme } from "./theme";
 import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
+import { Warnings } from "./processData";
 
 type HistogramProps = {
   data: {
