@@ -29,7 +29,7 @@ export const events: DataEvent[] = data.map((item) => {
 
 export const Warnings: Warning[] = [
   {
-    text: "Kraftigt regn i Norrköping, risk för översvämning",
+    text: "Kraftigt regn i Gävle, risk för översvämning",
     time: new Date(2021, 7, 17),
   },
   {

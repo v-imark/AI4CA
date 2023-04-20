@@ -124,6 +124,12 @@ function Postit(props: PostitProps): ReactElement {
       orderedDates = dates.sort(function (a, b) {
         return a > b ? 1 : -1;
       });
+    const latest = dates.reduce(function (r, a) {
+      return r > a ? r : a;
+    });
+    const oldest = dates.reduce(function (r, a) {
+      return r < a ? r : a;
+    });
 
     const predictions = data.map((event) => event["P (on-topic)"]);
     const greens = predictions.filter((prediction) => {
@@ -161,8 +167,8 @@ function Postit(props: PostitProps): ReactElement {
     return {
       postitName: nameOfPostit,
       selectedAmount: nAmount,
-      startDate: orderedDates[0],
-      endDate: orderedDates.reverse()[0],
+      startDate: oldest,
+      endDate: latest,
       avgLong: avgLong,
       avgLat: avgLat,
       avgTemp: randTemp.toFixed(1),

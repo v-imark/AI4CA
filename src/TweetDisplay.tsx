@@ -95,7 +95,7 @@ function TweetDisplay(event: DataEvent) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Card sx={{ width: "100%" }}>
+      <Card sx={{ width: "100%", height: "100%" }}>
         <CardMedia
           component="img"
           height="140"
@@ -147,8 +147,11 @@ function TweetDisplay(event: DataEvent) {
           <Typography variant="body2">
             {translated ? tweet.translatedText : tweet.text}
           </Typography>
-          <Typography padding={2}>
+          <Typography paddingY={2}>
             {timeString} &#x2022; {dateString}
+          </Typography>
+          <Typography>
+            { tweet["P (on-topic)"] + " On-Topic"}
           </Typography>
         </CardContent>
       </Card>

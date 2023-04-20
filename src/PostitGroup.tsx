@@ -33,7 +33,6 @@ function PostitGroup(props: StateProps) {
         setState={props.setState}
         selected={true}
       />
-      ;
       {(props.state.postItGroups != undefined
         ? props.state.postItGroups
         : []

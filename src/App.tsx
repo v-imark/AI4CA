@@ -60,12 +60,13 @@ function App() {
     <ThemeProvider theme={theme}>
       <Grid
         container
-        spacing={2}
+        rowSpacing={2}
         columnSpacing={0}
         sx={{
           height: "100%",
           width: "100%",
           margin: 0,
+          paddingLeft: 2,
         }}
       >
         <Grid item xs={5}>
@@ -90,7 +91,7 @@ function App() {
           </Grid>
         </Grid>
 
-        <Grid item xs={7} paddingLeft={0}>
+        <Grid item xs={7} sx={{ paddingLeft: 0 }}>
           <Grid
             container
             direction="column"

@@ -6,6 +6,7 @@ import { theme } from "./theme";
 import ReportIcon from "@mui/icons-material/Report";
 import { useDimensions } from "./useDimensions";
 import { Warnings } from "./processData";
+import React from "react";
 
 type HistogramProps = {
   data: {
@@ -117,9 +118,8 @@ function Histogram({
     const tooltipText = `Events:  ${bucket.length}`;
 
     return (
-      <Tooltip title={tooltipText} placement="top">
+      <Tooltip title={tooltipText} placement="top" key={x}>
         <rect
-          key={i}
           fill={
             i == selectedBucket
               ? theme.palette.primary.main
@@ -143,7 +143,7 @@ function Histogram({
     const offset = hoveredWarning == index ? 3 : 0;
 
     return (
-      <>
+      <React.Fragment key={x}>
         <svg
           width={size}
           height={size}
@@ -176,7 +176,7 @@ function Histogram({
           strokeWidth={2}
           strokeDasharray="3 3"
         />
-      </>
+      </React.Fragment>
     );
   });
 

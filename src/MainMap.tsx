@@ -40,7 +40,7 @@ function MainMap({
         duration: 2000,
         zoom: 3.7,
       });
-    }, 500);
+    }, 700);
     return () => clearTimeout(timer);
   }, []);
 
