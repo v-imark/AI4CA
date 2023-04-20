@@ -99,7 +99,7 @@ function TweetDisplay(event: DataEvent) {
         <CardMedia
           component="img"
           height="140"
-          image="/src/BlueEyesArt.jpg"
+          image="/src/Skyfallet-arsdag.jpg"
           alt="Blue eyes"
         />
         <CardHeader
@@ -150,9 +150,7 @@ function TweetDisplay(event: DataEvent) {
           <Typography paddingY={2}>
             {timeString} &#x2022; {dateString}
           </Typography>
-          <Typography>
-            { tweet["P (on-topic)"] + " On-Topic"}
-          </Typography>
+          <Typography>{tweet["P (on-topic)"] + " On-Topic"}</Typography>
         </CardContent>
       </Card>
     </ThemeProvider>

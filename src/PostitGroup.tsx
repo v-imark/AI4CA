@@ -5,7 +5,7 @@ import { DataEvent, PostIt, StateProps } from "./enums";
 import { useEffect, useMemo, useState } from "react";
 
 export const basePostit: PostIt = {
-  type: "Active",
+  type: "All Events",
   post_it_id: 1,
   event_ids: ids,
 };
